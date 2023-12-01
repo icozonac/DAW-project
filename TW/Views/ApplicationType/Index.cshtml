@@ -9,8 +9,11 @@
 			<h2 class="text-primary">Application Type List</h2>
 		</div>
 		<div class="col-6 text-end">
-			<a asp-action="Create" class="btn btn-primary" >
-			Creating a new application type</a>
+			<a asp-action="Create" class="btn btn-primary">
+				<i class="fas fa-plus"></i>
+				&nbsp;
+				Creating a new application type
+			</a>
 		</div>
 	</div>
 	
@@ -28,7 +31,17 @@
 				{
 					<tr>
 						<td width="50%">@obj.Name</td>
-						<td></td>
+						<td class="text-center">
+							<div class="w-75 btn-group" role="group">
+								<a asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-primary mx-2">
+									<i class="fas fa-edit"></i>
+								</a>
+								<a asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">
+									<i class="fas fa-trash-alt"></i>
+								</a>
+
+							</div>
+						</td>
 					</tr>
 				}
 			</tbody>
