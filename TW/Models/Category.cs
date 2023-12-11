@@ -8,7 +8,7 @@ namespace TW.Models
         public int Id { get; set; }
 
         [Required]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [Required]
         [Range(minimum:1,maximum: int.MaxValue, ErrorMessage = "Display Order for category must be greater than 0")]
