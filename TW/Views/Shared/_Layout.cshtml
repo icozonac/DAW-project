@@ -1,14 +1,18 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@using TW.Utility
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - TW</title>
+    <title>@ViewData["Title"] - DAW</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TW.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/fontawesome/css/all.css" />
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet" >
 </head>
 <body>
     <header>
@@ -21,15 +25,40 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+
 	                    <li class="nav-item">
-		                    <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Index">Category</a>
+		                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
 	                    </li>
-	                    <li class="nav-item">
-		                    <a class="nav-link text-dark" asp-area="" asp-controller="ApplicationType" asp-action="Index">Application Type</a>
+	                    <li class="nav-item dropdown">
+		                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			                    Content Management
+		                    </a>
+		                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+			                    <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Index">Category</a>
+			                    <a class="nav-link text-dark" asp-area="" asp-controller="ApplicationType" asp-action="Index">Application Type</a>
+			                    <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Product</a>
+			                    <div class="dropdown-divider"></div>
+		                    </div>
 	                    </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Product</a>
-                        </li>
+	                    <li>
+                            @if (HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart) != null)
+                            {
+	                            <a asp-action="Index" asp-controller="Cart" class="nav-link">
+		                            @{
+                                    var count = HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart).Count;
+		                            }
+                                    <i class="fas fa-shopping-cart"></i> Cart (@count)
+	                            </a>
+                            }
+                            else
+                            {
+
+	                            <a href="#" class="nav-link">
+                                    <i class="fas fa-shopping-cart"></i> Cart (0)
+	                            </a>
+
+                            }
+	                    </li>
                     </ul>
                 </div>
             </div>
@@ -43,7 +72,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - TW - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2023 - DAW - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -51,6 +80,7 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
