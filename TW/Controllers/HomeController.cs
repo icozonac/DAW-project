@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using TW.Data;
 using TW.Models;
 using TW.Models.ViewModels;
-using TW.Utility;
 
 namespace TW.Controllers
 {
@@ -23,7 +24,7 @@ namespace TW.Controllers
         {
             HomeVM homeVM = new HomeVM()
             {
-				Products = _db.Product.Include(u => u.Category).Include(u => u.ApplicationType),
+                Products = _db.Product.Include(u => u.Category).Include(u => u.ApplicationType).ToList(),
 				Categories = _db.Category
 			};  
 
@@ -33,16 +34,17 @@ namespace TW.Controllers
         public IActionResult Details(int id)
         {
             List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
-            if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart) != null &&
-                HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart).Count() > 0)
+
+            if (HttpContext.Session.Get(WC.SessionCart) is byte[] byteArray && byteArray.Length > 0)
             {
-                shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart);
+                shoppingCartList = JsonConvert.DeserializeObject<List<ShoppingCart>>(Encoding.UTF8.GetString(byteArray)) ?? new List<ShoppingCart>();
             }
+
 
             DetailsVM detailsVM = new DetailsVM()
             {
                 Product = _db.Product.Include(u => u.Category).Include(u => u.ApplicationType)
-                             .FirstOrDefault(u => u.Id == id),
+                    .FirstOrDefault(u => u.Id == id),
                 ExistsInCart = false
             };
 
@@ -62,13 +64,12 @@ namespace TW.Controllers
         {
             List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
 
-            if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart) != null &&
-                HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart).Count() > 0)
+            if (HttpContext.Session.Get(WC.SessionCart) is byte[] byteArray && byteArray.Length > 0)
             {
-                shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart);
+                shoppingCartList = JsonConvert.DeserializeObject<List<ShoppingCart>>(Encoding.UTF8.GetString(byteArray)) ?? new List<ShoppingCart>();
             }
             shoppingCartList.Add(new ShoppingCart { ProductId = id });
-            HttpContext.Session.Set(WC.SessionCart, shoppingCartList);
+            HttpContext.Session.Set(WC.SessionCart, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(shoppingCartList)));
 
             return RedirectToAction(nameof(Index));
         }
@@ -77,10 +78,9 @@ namespace TW.Controllers
         {
             List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
 
-            if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart) != null &&
-                HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCart).Count() > 0)
+            if (HttpContext.Session.Get(WC.SessionCart) is byte[] byteArray && byteArray.Length > 0)
             {
-                shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCart);
+                shoppingCartList = JsonConvert.DeserializeObject<List<ShoppingCart>>(Encoding.UTF8.GetString(byteArray)) ?? new List<ShoppingCart>();
             }
 
             var itemToRemove = shoppingCartList.SingleOrDefault(r => r.ProductId == id);
@@ -90,7 +90,7 @@ namespace TW.Controllers
                 shoppingCartList.Remove(itemToRemove);
             }
 
-            HttpContext.Session.Set(WC.SessionCart, shoppingCartList);
+            HttpContext.Session.Set(WC.SessionCart, Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(shoppingCartList)));
 
             return RedirectToAction(nameof(Index));
         }

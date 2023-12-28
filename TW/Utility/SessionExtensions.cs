@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text;
+using Newtonsoft.Json;
 
 namespace TW.Utility
 {
@@ -11,8 +12,10 @@ namespace TW.Utility
 
         public static T Get<T>(this ISession session, string key)
         {
-            var value = session.GetString(key);
-            return value == null ? default(T) : JsonConvert.DeserializeObject<T>(value);
+            var value = session.Get(key);
+            return value == null ? default(T) : JsonConvert.DeserializeObject<T>(Encoding.UTF8.GetString(value));
         }
+
+
     }
 }

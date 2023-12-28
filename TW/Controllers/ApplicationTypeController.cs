@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TW.Data;
 using TW.Models;
 
 namespace TW.Controllers
 {
-
-	public class ApplicationTypeController : Controller
+    [Authorize(Roles = WC.AdminRole)]
+    public class ApplicationTypeController : Controller
 	{
 		private readonly ApplicationDbContext _db;
 
